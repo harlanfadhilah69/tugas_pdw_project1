@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Pendaftaran - Booking Merbabu</title>
+  <title>Login - Booking Merbabu</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <style>
     body.fade-in {
@@ -20,18 +20,17 @@
       from { opacity: 1 }
       to { opacity: 0 }
     }
-    /* Gaya untuk menyembunyikan elemen - ini tidak lagi diperlukan di pendaftaran.html */
-    /* .hidden {
+    /* Gaya untuk menyembunyikan elemen */
+    .hidden {
       display: none;
-    } */
+    }
   </style>
 </head>
 <body class="fade-in bg-gray-50 text-gray-800 font-sans">
-  
 
   <header class="bg-green-700 text-white py-6 shadow-md">
     <div class="container mx-auto px-6 flex justify-between items-center">
-      <h1 class="text-3xl font-bold">Daftar Pendaki Baru</h1>
+      <h1 class="text-3xl font-bold">Login Pendaki</h1>
       <nav class="mt-4 space-x-4">
         <a href="index.html" class="hover:underline">Beranda</a>
         <a href="tentang.html" class="hover:underline">Tentang</a>
@@ -42,41 +41,46 @@
     </div>
   </header>
 
-  <section class="container mx-auto px-4 py-10 max-w-2xl">
-    <h2 class="text-2xl font-semibold mb-2">🌄 Siap Menjelajahi Gunung Merbabu?</h2>
-    <p class="mb-6 text-sm text-gray-600">
-      Isi formulir di bawah untuk membuat akun pendaki. Setelah mendaftar, kamu bisa langsung booking jadwal pendakianmu secara online.
+  <section class="container mx-auto px-4 py-10 max-w-xl">
+    <h2 class="text-2xl font-semibold mb-2 text-center">👋 Selamat Datang Kembali!</h2>
+    <p class="mb-6 text-sm text-gray-600 text-center">
+      Silakan masukkan username dan password Anda untuk melanjutkan.
     </p>
 
-    <form id="formDaftar" class="bg-white p-6 rounded shadow space-y-4">
-      <div>
-        <label for="nama" class="block font-medium mb-1">Nama Lengkap:</label>
-        <input type="text" id="nama" name="nama" placeholder="Contoh: Budi Santoso"
-               required class="w-full px-3 py-2 border rounded-md" />
-      </div>
+    <div id="loggedInSection" class="bg-white p-6 rounded shadow space-y-4 text-center hidden">
+        <p class="text-lg font-semibold text-green-700 mb-4">
+            Anda sudah login sebagai <span id="loggedInUsername" class="font-bold"></span>!
+        </p>
+        <p class="mb-6 text-gray-700">Jika ingin login dengan akun lain, silakan logout terlebih dahulu.</p>
+        <button id="logoutButton" class="w-full bg-red-600 text-white py-2 px-4 rounded hover:bg-red-700 transition">
+            Logout
+        </button>
+        <a href="booking.html" class="inline-block w-full bg-blue-600 text-white py-2 px-4 rounded hover:bg-blue-700 transition mt-2">
+            Lanjutkan ke Booking
+        </a>
+    </div>
 
-      <div>
-        <label for="email" class="block font-medium mb-1">Alamat Email:</label>
-        <input type="email" id="email" name="email" placeholder="Contoh: budi@email.com"
-               required class="w-full px-3 py-2 border rounded-md" />
-      </div>
-
+    <form id="formLogin" class="bg-white p-6 rounded shadow space-y-4">
       <div>
         <label for="username" class="block font-medium mb-1">Username:</label>
-        <input type="text" id="username" name="username" placeholder="Contoh: budimerbabu"
+        <input type="text" id="username" name="username" placeholder="Masukkan username Anda"
                required class="w-full px-3 py-2 border rounded-md" />
       </div>
 
       <div>
         <label for="password" class="block font-medium mb-1">Password:</label>
-        <input type="password" id="password" name="password" placeholder="Minimal 6 karakter"
+        <input type="password" id="password" name="password" placeholder="Masukkan password Anda"
                required class="w-full px-3 py-2 border rounded-md" />
       </div>
 
       <button type="submit" class="w-full bg-green-700 text-white py-2 px-4 rounded hover:bg-green-800 transition">
-        Daftar Sekarang
+        Login
       </button>
     </form>
+
+    <p class="text-center mt-4 text-sm text-gray-600">
+      Belum punya akun? <a href="pendaftaran.html" class="text-blue-600 hover:underline">Daftar di sini</a>.
+    </p>
   </section>
 
   <footer class="bg-gray-100 py-4 mt-10">
@@ -88,91 +92,83 @@
   <script>
     document.body.classList.add('fade-in');
 
-    const formDaftar = document.getElementById('formDaftar');
-    // const loggedInSection = document.getElementById('loggedInSection'); // Dihapus
-    // const loggedInUsernameSpan = document.getElementById('loggedInUsername'); // Dihapus
-    // const logoutButton = document.getElementById('logoutButton'); // Dihapus
+    const formLogin = document.getElementById('formLogin'); // Ganti dari formDaftar ke formLogin
+    const loggedInSection = document.getElementById('loggedInSection');
+    const loggedInUsernameSpan = document.getElementById('loggedInUsername');
+    const logoutButton = document.getElementById('logoutButton');
 
-    // Fungsi untuk menampilkan/menyembunyikan elemen - ini tidak lagi diperlukan di sini
-    /* function showElement(element) {
+    // Fungsi untuk menampilkan/menyembunyikan elemen
+    function showElement(element) {
         element.classList.remove('hidden');
     }
 
     function hideElement(element) {
         element.classList.add('hidden');
-    } */
+    }
 
-    // Cek status login saat halaman dimuat - ini juga Dihapus
-    /* function checkLoginStatus() {
+    // Cek status login saat halaman dimuat (untuk menampilkan/menyembunyikan form login/logout section)
+    function checkLoginStatus() {
         const loggedInUser = JSON.parse(localStorage.getItem('loggedInUser'));
         if (loggedInUser && loggedInUser.username) {
-            hideElement(formDaftar); 
+            hideElement(formLogin); // Sembunyikan form login
             loggedInUsernameSpan.textContent = loggedInUser.username;
-            showElement(loggedInSection); 
+            showElement(loggedInSection); // Tampilkan bagian info login dan tombol logout
         } else {
-            showElement(formDaftar); 
-            hideElement(loggedInSection); 
+            showElement(formLogin); // Tampilkan form login
+            hideElement(loggedInSection); // Sembunyikan bagian info login
         }
-    } */
+    }
 
-    // Panggil saat halaman pertama kali dimuat - Dihapus
-    // checkLoginStatus();
+    // Panggil saat halaman pertama kali dimuat
+    checkLoginStatus();
 
-    // Event listener untuk tombol logout - Dihapus
-    /* logoutButton.addEventListener('click', function() {
-        localStorage.removeItem('loggedInUser');
+    // Event listener untuk tombol logout (BARU: Ditambahkan di sini)
+    logoutButton.addEventListener('click', function() {
+        localStorage.removeItem('loggedInUser'); // Hapus data login dari localStorage
         alert('Anda telah berhasil logout, Baginda GAGAT.');
         document.body.classList.remove('fade-in');
         document.body.classList.add('fade-out');
         setTimeout(() => {
-            window.location.reload(); 
+            window.location.reload(); // Muat ulang halaman untuk menampilkan form login
         }, 500);
-    }); */
+    });
 
-
-    // Event listener untuk form pendaftaran
-    formDaftar.addEventListener('submit', async function(e) {
+    document.getElementById('formLogin').addEventListener('submit', async function(e) {
       e.preventDefault();
-      const nama = document.getElementById('nama').value.trim();
-      const email = document.getElementById('email').value.trim();
       const username = document.getElementById('username').value.trim();
       const password = document.getElementById('password').value.trim();
 
-      if (password.length < 6) {
-        alert("Password minimal 6 karakter, Baginda!");
-        return;
-      }
-
       try {
-        const response = await fetch('http://localhost:3000/api/register', {
+        const response = await fetch('http://localhost:3000/api/login', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json'
           },
-          body: JSON.stringify({ nama, email, username, password })
+          body: JSON.stringify({ username, password })
         });
 
         const dataBalik = await response.json();
 
         if (response.ok) {
           alert(dataBalik.message);
-          localStorage.setItem('loggedInUser', JSON.stringify({ username: username, nama: nama }));
+          // Simpan info pengguna ke localStorage
+          localStorage.setItem('loggedInUser', JSON.stringify(dataBalik.user));
           
           document.body.classList.remove('fade-in');
           document.body.classList.add('fade-out');
           setTimeout(() => {
-            window.location.href = 'booking.html';
+            window.location.href = 'booking.html'; // Arahkan ke halaman booking setelah login sukses
           }, 500);
         } else {
-          alert('Pendaftaran Gagal: ' + dataBalik.message);
+          alert('Login Gagal: ' + dataBalik.message);
         }
       } catch (error) {
-        console.error('Error saat mendaftar:', error);
+        console.error('Error saat login:', error);
         alert('Terjadi kesalahan jaringan atau server, Baginda!');
       }
     });
 
-    // Ini buat animasi transisi antar halaman, biarkan saja
+    // Ini buat animasi transisi antar halaman
     document.querySelectorAll('a[href]').forEach(function(link) {
       const url = new URL(link.href, window.location.href);
       if (url.origin === window.location.origin && url.pathname !== window.location.pathname) {

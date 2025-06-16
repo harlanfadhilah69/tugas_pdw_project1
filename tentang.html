@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Tentang - Booking Merbabu</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    body.fade-in {
+      animation: fadeIn 0.5s ease-in forwards;
+    }
+    body.fade-out {
+      animation: fadeOut 0.5s ease-out forwards;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0 }
+      to { opacity: 1 }
+    }
+    @keyframes fadeOut {
+      from { opacity: 1 }
+      to { opacity: 0 }
+    }
+  </style>
+</head>
+<body class="font-sans text-white bg-slate-400">
+
+  <header class="bg-green-700 py-4 relative z-10">
+    <div class="container mx-auto px-6 flex justify-between items-center">
+      <h1 class="text-3xl font-bold">Taman Nasional Gunung Merbabu</h1>
+      <nav class="mt-4 space-x-4">
+        <a href="index.html" class="hover:underline">Beranda</a>
+        <a href="tentang.html" class="hover:underline">Tentang</a>
+        <a href="pendaftaran.html" class="hover:underline">Pendaftaran</a>
+        <a href="booking.html" class="hover:underline">Booking</a>
+      </nav>
+    </div>
+  </header>
+
+  <section class="relative z-10 container mx-auto px-4 py-10 max-w-3xl">
+    <h2 class="text-2xl md:text-3xl font-semibold mb-6 text-center text-white">
+      ✨ Eksplorasi Keindahan Gunung Merbabu
+    </h2>
+
+    <img src="img/merbabuview.jpg" alt="Gunung Merbabu"
+         class="w-full max-h-72 object-cover rounded-lg mb-6 shadow-md" />
+
+    <p class="mb-4">
+      <strong>Gunung Merbabu</strong> adalah gunung berapi di Jawa Tengah dengan ketinggian 3.145 mdpl.
+      Merbabu menawarkan jalur sabana yang luas dan pemandangan sunrise yang memukau.
+    </p>
+
+    <h3 class="text-xl font-semibold mb-2">🔍 Fakta Menarik</h3>
+    <ul class="list-disc list-inside mb-6 space-y-1">
+      <li>Berada di kawasan Taman Nasional Gunung Merbabu.</li>
+      <li>Nama "Merbabu" berarti "Gunung Wanita Tua".</li>
+      <li>Tersedia beberapa jalur pendakian menantang dan indah.</li>
+    </ul>
+
+    <h3 class="text-xl font-semibold mb-2">🥾 Jalur Pendakian Populer</h3>
+    <ol class="list-decimal list-inside mb-6 space-y-1">
+      <li><strong>Selo</strong> – Jalur populer dan ramah pemula.</li>
+      <li><strong>Wekas</strong> – Melalui hutan lebat dan sejuk.</li>
+      <li><strong>Suwanting</strong> – Tantangan bagi pendaki berpengalaman.</li>
+      <li><strong>Thekelan</strong> – Jalur alami, sunyi, dan eksotis.</li>
+    </ol>
+
+    <p class="mb-6">Gunakan sistem booking online untuk pendakian yang lebih tertib dan nyaman.</p>
+
+    <div class="text-center">
+      <a href="pendaftaran.html"
+         class="inline-block bg-green-700 text-white py-2 px-5 rounded hover:bg-green-800 transition">
+        Daftar Sekarang
+      </a>
+    </div>
+  </section>
+
+  <footer class="bg-gray-100 py-4 mt-10">
+    <div class="text-center text-sm text-gray-600">
+      &copy; 2025 Gunung Rinjani Explorer. All rights reserved.
+    </div>
+  </footer>
+
+  <script>
+    document.body.classList.add('fade-in');
+    document.querySelectorAll('a[href]').forEach(function(link) {
+      const url = new URL(link.href, window.location.href);
+      if (url.origin === window.location.origin && url.pathname !== window.location.pathname) {
+        link.addEventListener('click', function(e) {
+          e.preventDefault();
+          document.body.classList.remove('fade-in');
+          document.body.classList.add('fade-out');
+          setTimeout(() => {
+            window.location.href = link.href;
+          }, 500);
+        });
+      }
+    });
+  </script>
+</body>
+</html>

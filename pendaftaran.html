@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Pendaftaran - Booking Merbabu</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    body.fade-in {
+      animation: fadeIn 0.5s ease-in forwards;
+    }
+    body.fade-out {
+      animation: fadeOut 0.5s ease-out forwards;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0 }
+      to { opacity: 1 }
+    }
+    @keyframes fadeOut {
+      from { opacity: 1 }
+      to { opacity: 0 }
+    }
+  </style>
+</head>
+<body class="fade-in bg-gray-50 text-gray-800 font-sans">
+
+  <header class="bg-green-700 text-white py-6 shadow-md">
+    <div class="container mx-auto px-6 flex justify-between items-center">
+      <h1 class="text-3xl font-bold">Daftar Pendaki Baru</h1>
+      <nav class="mt-4 space-x-4">
+        <a href="index.html" class="hover:underline">Beranda</a>
+        <a href="tentang.html" class="hover:underline">Tentang</a>
+        <a href="pendaftaran.html" class="hover:underline">Pendaftaran</a>
+        <a href="booking.html" class="hover:underline">Booking</a>
+      </nav>
+    </div>
+  </header>
+
+  <section class="container mx-auto px-4 py-10 max-w-2xl">
+    <h2 class="text-2xl font-semibold mb-2">🌄 Siap Menjelajahi Gunung Merbabu?</h2>
+    <p class="mb-6 text-sm text-gray-600">
+      Isi formulir di bawah untuk membuat akun pendaki. Setelah mendaftar, kamu bisa langsung booking jadwal pendakianmu secara online.
+    </p>
+
+    <form id="formDaftar" class="bg-white p-6 rounded shadow space-y-4">
+      <div>
+        <label for="nama" class="block font-medium mb-1">Nama Lengkap:</label>
+        <input type="text" id="nama" name="nama" placeholder="Contoh: Budi Santoso"
+               required class="w-full px-3 py-2 border rounded-md" />
+      </div>
+
+      <div>
+        <label for="email" class="block font-medium mb-1">Alamat Email:</label>
+        <input type="email" id="email" name="email" placeholder="Contoh: budi@email.com"
+               required class="w-full px-3 py-2 border rounded-md" />
+      </div>
+
+      <div>
+        <label for="username" class="block font-medium mb-1">Username:</label>
+        <input type="text" id="username" name="username" placeholder="Contoh: budimerbabu"
+               required class="w-full px-3 py-2 border rounded-md" />
+      </div>
+
+      <div>
+        <label for="password" class="block font-medium mb-1">Password:</label>
+        <input type="password" id="password" name="password" placeholder="Minimal 6 karakter"
+               required class="w-full px-3 py-2 border rounded-md" />
+      </div>
+
+      <button type="submit" class="w-full bg-green-700 text-white py-2 px-4 rounded hover:bg-green-800 transition">
+        Daftar Sekarang
+      </button>
+    </form>
+  </section>
+
+  <footer class="bg-gray-100 py-4 mt-10">
+    <div class="text-center text-sm text-gray-600">
+      &copy; 2025 Booking Merbabu — Jelajahi alam dengan bijak.
+    </div>
+  </footer>
+
+  <script>
+    document.body.classList.add('fade-in');
+
+    document.getElementById('formDaftar').addEventListener('submit', function(e) {
+      e.preventDefault();
+      const data = {
+        nama: nama.value.trim(),
+        email: email.value.trim(),
+        username: username.value.trim(),
+        password: password.value.trim()
+      };
+
+      if (data.password.length < 6) {
+        alert("Password minimal 6 karakter!");
+        return;
+      }
+
+      localStorage.setItem('pendaftaran', JSON.stringify(data));
+      alert("Pendaftaran berhasil! Anda akan diarahkan ke halaman booking.");
+      document.body.classList.add('fade-out');
+      setTimeout(() => {
+        window.location.href = 'booking.html';
+      }, 500);
+    });
+
+    document.querySelectorAll('a[href]').forEach(function(link) {
+      const url = new URL(link.href, window.location.href);
+      if (url.origin === window.location.origin && url.pathname !== window.location.pathname) {
+        link.addEventListener('click', function(e) {
+          e.preventDefault();
+          document.body.classList.remove('fade-in');
+          document.body.classList.add('fade-out');
+          setTimeout(() => {
+            window.location.href = link.href;
+          }, 500);
+        });
+      }
+    });
+  </script>
+</body>
+</html>

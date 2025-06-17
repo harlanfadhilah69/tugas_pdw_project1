@@ -22,8 +22,15 @@ if (isset($_GET['aksi'])) {
     }
     if ($_GET['aksi'] == 'hapus_user') {
         $id = $_GET['id'];
-        $koneksi->prepare("DELETE FROM booking WHERE id_user = ?")->execute([$id]);
-        $koneksi->prepare("DELETE FROM pendaftaran WHERE id_pendaftaran = ?")->execute([$id]);
+        // Hapus booking terkait user terlebih dahulu
+        $stmt_booking = $koneksi->prepare("DELETE FROM booking WHERE id_user = ?");
+        $stmt_booking->bind_param("i", $id);
+        $stmt_booking->execute();
+        
+        // Hapus user
+        $stmt_user = $koneksi->prepare("DELETE FROM pendaftaran WHERE id_pendaftaran = ?");
+        $stmt_user->bind_param("i", $id);
+        $stmt_user->execute();
         header('Location: admin.php?status=hapus_sukses');
         exit();
     }
@@ -37,14 +44,11 @@ if (isset($_POST['update_user'])) {
     $username = $_POST['username'];
     $role = $_POST['role'];
 
-    // Cek apakah password baru diisi atau tidak
     if (!empty($_POST['password'])) {
-        // Jika diisi, hash password baru dan update
         $password_hash = password_hash($_POST['password'], PASSWORD_BCRYPT);
         $stmt = $koneksi->prepare("UPDATE pendaftaran SET nama_lengkap=?, alamat_email=?, username=?, password=?, role=? WHERE id_pendaftaran=?");
         $stmt->bind_param("sssssi", $nama_lengkap, $email, $username, $password_hash, $role, $id);
     } else {
-        // Jika kosong, update data tanpa mengubah password
         $stmt = $koneksi->prepare("UPDATE pendaftaran SET nama_lengkap=?, alamat_email=?, username=?, role=? WHERE id_pendaftaran=?");
         $stmt->bind_param("ssssi", $nama_lengkap, $email, $username, $role, $id);
     }
@@ -84,7 +88,7 @@ if (isset($_GET['aksi']) && $_GET['aksi'] == 'edit_booking') {
     $booking_to_edit = $stmt->get_result()->fetch_assoc();
 }
 
-// Mengambil semua data pengguna dan booking untuk ditampilkan di tabel
+// -- Mengambil semua data untuk ditampilkan di tabel --
 $result_users = $koneksi->query("SELECT * FROM pendaftaran ORDER BY id_pendaftaran DESC");
 $sql_bookings = "SELECT b.*, p.username FROM booking b LEFT JOIN pendaftaran p ON b.id_user = p.id_pendaftaran ORDER BY b.id_booking DESC";
 $result_bookings = $koneksi->query($sql_bookings);
@@ -94,7 +98,7 @@ $result_bookings = $koneksi->query($sql_bookings);
 <html lang="id">
 <head>
     <meta charset="UTF-8">
-    <title>Admin Panel - Gunung Merbabu</title>
+    <title>Admin Dashboard - Gunung Merbabu</title>
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body class="bg-gray-100 font-sans">
@@ -102,7 +106,7 @@ $result_bookings = $koneksi->query($sql_bookings);
 <?php require 'header.php'; ?>
 
 <main class="container mx-auto px-6 py-8">
-    <h1 class="text-4xl font-bold text-gray-800 mb-6">Admin Panel</h1>
+    <h1 class="text-4xl font-bold text-gray-800 mb-6">Admin Dashboard</h1>
 
     <?php if ($user_to_edit): ?>
     <div class="bg-white p-6 rounded-lg shadow-lg mb-8" id="form-edit-user">
@@ -134,8 +138,19 @@ $result_bookings = $koneksi->query($sql_bookings);
             <input type="hidden" name="id_booking" value="<?php echo $booking_to_edit['id_booking']; ?>">
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <input type="date" name="tanggal_pendakian" value="<?php echo htmlspecialchars($booking_to_edit['tanggal_pendakian']); ?>" class="p-2 border rounded" required>
-                <input type="text" name="jalur_pendakian" value="<?php echo htmlspecialchars($booking_to_edit['jalur_pendakian']); ?>" class="p-2 border rounded" required>
-            </div>
+                
+                <select name="jalur_pendakian" class="p-2 border rounded" required>
+                    <option value="">-- Pilih Jalur --</option>
+                    <?php
+                    $jalur_options = ['Selo', 'Wekas', 'Suwanting', 'Thekelan'];
+                    foreach ($jalur_options as $option) {
+                        // Cek apakah opsi ini adalah jalur yang sedang diedit, jika ya, buat terpilih (selected)
+                        $selected = ($booking_to_edit['jalur_pendakian'] == $option) ? 'selected' : '';
+                        echo "<option value=\"$option\" $selected>" . htmlspecialchars($option) . "</option>";
+                    }
+                    ?>
+                </select>
+                </div>
             <div class="mt-4">
                 <button type="submit" name="update_booking" class="bg-blue-600 text-white py-2 px-4 rounded hover:bg-blue-700">Simpan Perubahan</button>
                 <a href="admin.php" class="bg-gray-400 text-white py-2 px-4 rounded hover:bg-gray-500 ml-2">Batal</a>
@@ -150,7 +165,7 @@ $result_bookings = $koneksi->query($sql_bookings);
             <table class="min-w-full bg-white">
                 <thead class="bg-gray-800 text-white">
                     <tr>
-                        <th class="py-3 px-4 uppercase font-semibold text-sm text-left">ID</th>
+                        <th class="py-3 px-4 uppercase font-semibold text-sm text-left">No</th>
                         <th class="py-3 px-4 uppercase font-semibold text-sm text-left">Username</th>
                         <th class="py-3 px-4 uppercase font-semibold text-sm text-left">Nama Lengkap</th>
                         <th class="py-3 px-4 uppercase font-semibold text-sm text-left">Tanggal</th>
@@ -159,9 +174,12 @@ $result_bookings = $koneksi->query($sql_bookings);
                     </tr>
                 </thead>
                 <tbody class="text-gray-700">
-                    <?php while ($booking = $result_bookings->fetch_assoc()): ?>
+                    <?php 
+                    $nomor_booking = 1;
+                    while ($booking = $result_bookings->fetch_assoc()): 
+                    ?>
                     <tr class="border-b">
-                        <td class="py-3 px-4"><?php echo $booking['id_booking']; ?></td>
+                        <td class="py-3 px-4"><?php echo $nomor_booking++; ?></td>
                         <td class="py-3 px-4"><?php echo htmlspecialchars($booking['username'] ?: 'N/A'); ?></td>
                         <td class="py-3 px-4"><?php echo htmlspecialchars($booking['nama_lengkap']); ?></td>
                         <td class="py-3 px-4"><?php echo date('d M Y', strtotime($booking['tanggal_pendakian'])); ?></td>
@@ -183,7 +201,7 @@ $result_bookings = $koneksi->query($sql_bookings);
             <table class="min-w-full bg-white">
                 <thead class="bg-gray-800 text-white">
                     <tr>
-                        <th class="py-3 px-4 uppercase font-semibold text-sm text-left">ID</th>
+                        <th class="py-3 px-4 uppercase font-semibold text-sm text-left">No</th>
                         <th class="py-3 px-4 uppercase font-semibold text-sm text-left">Nama Lengkap</th>
                         <th class="py-3 px-4 uppercase font-semibold text-sm text-left">Email</th>
                         <th class="py-3 px-4 uppercase font-semibold text-sm text-left">Username</th>
@@ -192,9 +210,12 @@ $result_bookings = $koneksi->query($sql_bookings);
                     </tr>
                 </thead>
                 <tbody class="text-gray-700">
-                    <?php while ($user = $result_users->fetch_assoc()): ?>
+                    <?php 
+                    $nomor_user = 1;
+                    while ($user = $result_users->fetch_assoc()): 
+                    ?>
                     <tr class="border-b">
-                        <td class="py-3 px-4"><?php echo $user['id_pendaftaran']; ?></td>
+                        <td class="py-3 px-4"><?php echo $nomor_user++; ?></td>
                         <td class="py-3 px-4"><?php echo htmlspecialchars($user['nama_lengkap']); ?></td>
                         <td class="py-3 px-4"><?php echo htmlspecialchars($user['alamat_email']); ?></td>
                         <td class="py-3 px-4"><?php echo htmlspecialchars($user['username']); ?></td>

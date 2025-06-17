@@ -1,72 +1,85 @@
 <?php
-// Memulai sesi untuk memeriksa status login
+// Selalu mulai session di baris paling atas
 session_start();
 
-// Cek apakah pengguna sudah login. Jika belum, alihkan ke halaman login.
-if (!isset($_SESSION['user_id'])) {
-    // Redirect ke login.php dengan pesan error
-    header('Location: login.php?pesan=harus_login');
-    exit(); // Pastikan tidak ada kode lain yang dieksekusi setelah redirect
+// Keamanan: Pastikan hanya pengguna yang sudah login yang bisa mengakses halaman ini
+if (!isset($_SESSION['sudah_login'])) {
+    header('Location: login.php');
+    exit();
 }
 
-// Jika sudah login, panggil header
+// Hubungkan ke database
+require 'koneksi.php';
+
+// Ambil data booking pengguna saat ini (jika ada) untuk ditampilkan di form
+$current_booking = null;
+$userId = $_SESSION['user_id'];
+$stmt = $koneksi->prepare("SELECT tanggal_pendakian, jalur_pendakian FROM booking WHERE id_user = ?");
+$stmt->bind_param("i", $userId);
+$stmt->execute();
+$result = $stmt->get_result();
+if ($result->num_rows > 0) {
+    $current_booking = $result->fetch_assoc();
+}
+$stmt->close();
+
+// Panggil header
 require 'header.php';
 ?>
 
-<main class="container mx-auto px-4 py-10">
-    <div class="bg-white p-8 rounded-lg shadow-md max-w-xl mx-auto">
-        
-        <div class="mb-6 pb-4 border-b">
-            <h2 class="text-2xl font-bold">Formulir Booking Pendakian</h2>
-            <p class="text-gray-600">Selamat datang, <strong><?php echo htmlspecialchars($_SESSION['nama_lengkap']); ?></strong>! Silakan isi detail pendakian Anda.</p>
-        </div>
+<main class="container mx-auto px-6 py-12">
+    <div class="bg-white p-8 rounded-lg shadow-lg max-w-2xl mx-auto">
+        <h2 class="text-3xl font-bold text-center text-gray-800 mb-2">
+            Formulir Booking Pendakian
+        </h2>
+        <p class="text-center text-gray-600 mb-8">
+            Silakan pilih tanggal dan jalur pendakian Anda.
+        </p>
 
-        <form id="formBooking" action="proses_booking.php" method="POST" class="space-y-4">
-            
-            <div>
-                <label for="nama" class="block font-semibold mb-1">Nama Lengkap:</label>
-                <input 
-                    type="text" 
-                    id="nama" 
-                    name="nama" 
-                    value="<?php echo htmlspecialchars($_SESSION['nama_lengkap']); ?>" 
-                    required 
-                    class="w-full px-3 py-2 border rounded-md bg-gray-100" 
-                    readonly 
-                />
+        <form action="proses_booking.php" method="POST">
+            <div class="space-y-6">
+                <div>
+                    <label for="tanggal" class="block text-lg font-semibold text-gray-700 mb-2">Pilih Tanggal Pendakian:</label>
+                    <input 
+                        type="date" 
+                        id="tanggal" 
+                        name="tanggal" 
+                        class="w-full p-3 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500" 
+                        value="<?php echo htmlspecialchars($current_booking['tanggal_pendakian'] ?? ''); ?>"
+                        required
+                    >
+                </div>
+                <div>
+                    <label for="jalur" class="block text-lg font-semibold text-gray-700 mb-2">Pilih Jalur Pendakian:</label>
+                    <select 
+                        id="jalur" 
+                        name="jalur" 
+                        class="w-full p-3 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500" 
+                        required
+                    >
+                        <option value="">-- Pilih Jalur --</option>
+                        <?php 
+                        $jalur_saat_ini = $current_booking['jalur_pendakian'] ?? '';
+                        $jalur_options = ['Selo', 'Wekas', 'Suwanting', 'Thekelan'];
+                        foreach ($jalur_options as $option) {
+                            $selected = ($jalur_saat_ini == $option) ? 'selected' : '';
+                            echo "<option value=\"$option\" $selected>$option</option>";
+                        }
+                        ?>
+                    </select>
+                </div>
             </div>
 
-            <div>
-                <label for="tanggal" class="block font-semibold mb-1">Tanggal Pendakian:</label>
-                <input 
-                    type="date" 
-                    id="tanggal" 
-                    name="tanggal" 
-                    required 
-                    class="w-full px-3 py-2 border rounded-md" 
-                    min="<?php echo date('Y-m-d'); ?>" 
-                />
+            <div class="text-center mt-8">
+                <button type="submit" class="w-full bg-green-700 text-white font-bold py-3 px-8 rounded-lg hover:bg-green-800 transition shadow-lg transform hover:scale-105">
+                    Simpan Jadwal Booking
+                </button>
             </div>
-
-            <div>
-                <label for="jalur" class="block font-semibold mb-1">Pilih Jalur Pendakian:</label>
-                <select id="jalur" name="jalur" required class="w-full px-3 py-2 border rounded-md">
-                    <option value="">-- Pilih Jalur --</option>
-                    <option value="Selo">Selo</option>
-                    <option value="Wekas">Wekas</option>
-                    <option value="Suwanting">Suwanting</option>
-                    <option value="Thekelan">Thekelan</option>
-                </select>
-            </div>
-
-            <button type="submit" class="w-full bg-green-700 text-white py-3 px-4 rounded-lg font-semibold hover:bg-green-800 transition duration-200">
-                Booking Sekarang
-            </button>
         </form>
     </div>
 </main>
 
 <?php
-// Memanggil footer
+// Panggil footer
 require 'footer.php';
 ?>

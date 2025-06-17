@@ -25,7 +25,7 @@ require 'header.php';
         </div>
 
     <?php else: ?>
-        <h2 class="text-2xl font-semibold mb-2 text-center">👋 Selamat Datang Kembali!</h2>
+        <h2 class="text-2xl font-semibold mb-2 text-center">👋 Selamat Datang!</h2>
         <p class="mb-6 text-sm text-gray-600 text-center">
             Silakan masukkan username dan password Anda untuk melanjutkan.
         </p>

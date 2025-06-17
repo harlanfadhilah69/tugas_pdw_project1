@@ -1,1 +1,1 @@
-![usecase lagi dan lagi](https://github.com/user-attachments/assets/b980e1f8-19cf-4cdc-9a48-dd515aec8065)
+![usecase part2](https://github.com/user-attachments/assets/b84446b8-1f6e-423e-b61c-46ed581d7077)

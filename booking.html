@@ -31,6 +31,7 @@
         <a href="index.html" class="hover:underline">Beranda</a>
         <a href="tentang.html" class="hover:underline">Tentang</a>
         <a href="pendaftaran.html" class="hover:underline">Pendaftaran</a>
+        <a href="login.html" class="hover:underline">Login</a>
         <a href="booking.html" class="hover:underline">Booking</a>
       </nav>
     </div>
@@ -54,10 +55,10 @@
         <label for="jalur" class="block font-semibold mb-1">Pilih Jalur Pendakian:</label>
         <select id="jalur" name="jalur" required class="w-full px-3 py-2 border rounded-md">
           <option value="">-- Pilih Jalur --</option>
-          <option value="selo">Selo</option>
-          <option value="wekas">Wekas</option>
-          <option value="suwanting">Suwanting</option>
-          <option value="thekelan">Thekelan</option>
+          <option value="Selo">Selo</option>
+          <option value="Wekas">Wekas</option>
+          <option value="Suwanting">Suwanting</option>
+          <option value="Thekelan">Thekelan</option>
         </select>
       </div>
 
@@ -78,31 +79,63 @@
   <script>
     document.body.classList.add('fade-in');
 
-    const data = JSON.parse(localStorage.getItem('pendaftaran'));
+    const loggedInUser = JSON.parse(localStorage.getItem('loggedInUser'));
     const infoUserDiv = document.getElementById('infoUser');
     const inputNama = document.getElementById('nama');
     const formBooking = document.getElementById('formBooking');
     const pesanSukses = document.getElementById('pesanSukses');
 
-    if (data) {
+    if (loggedInUser) {
       infoUserDiv.innerHTML = `
-        <p><strong>Nama:</strong> ${data.nama}</p>
-        <p><strong>Email:</strong> ${data.email}</p>
-        <p><strong>Username:</strong> ${data.username}</p>`;
-      inputNama.value = data.nama;
+        <p><strong>Selamat datang, ${loggedInUser.nama}!</strong></p>
+        <p>Anda siap untuk booking pendakian.</p>`;
+      inputNama.value = loggedInUser.nama;
+      inputNama.readOnly = true;
     } else {
-      infoUserDiv.innerHTML = `<p class="text-red-600">Anda belum melakukan pendaftaran. Silakan daftar terlebih dahulu.</p>`;
+      infoUserDiv.innerHTML = `<p class="text-red-600">Anda belum login atau mendaftar. Silakan <a href="pendaftaran.html" class="text-blue-600 hover:underline">daftar</a> terlebih dahulu.</p>`;
       formBooking.style.display = 'none';
     }
 
-    formBooking.addEventListener('submit', function(e) {
+    formBooking.addEventListener('submit', async function(e) {
       e.preventDefault();
-      alert(`Terima kasih, ${inputNama.value}. Booking Anda telah diterima!`);
-      formBooking.reset();
-      document.body.classList.add('fade-out');
-      setTimeout(() => {
-        window.location.href = 'index.html';
-      }, 500);
+      const nama = document.getElementById('nama').value.trim();
+      const tanggal = document.getElementById('tanggal').value.trim();
+      const jalur = document.getElementById('jalur').value.trim();
+
+      try {
+        const response = await fetch('http://localhost:3000/api/book', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ nama, tanggal, jalur })
+        });
+
+        const dataBalik = await response.json();
+
+        if (response.ok) {
+          pesanSukses.textContent = 'Terima kasih Telah Membooking, Baginda GAGAT!'; // Perubahan di sini
+          pesanSukses.classList.remove('text-red-600');
+          pesanSukses.classList.add('text-green-600');
+          formBooking.reset(); // Kosongkan form
+
+          // Jeda sebentar sebelum mengarahkan ke halaman beranda
+          document.body.classList.remove('fade-in');
+          document.body.classList.add('fade-out');
+          setTimeout(() => {
+            window.location.href = 'index.html'; // Balik ke beranda setelah booking
+          }, 1500); // Jeda 1.5 detik
+        } else {
+          pesanSukses.textContent = 'Booking Gagal: ' + dataBalik.message;
+          pesanSukses.classList.remove('text-green-600');
+          pesanSukses.classList.add('text-red-600');
+        }
+      } catch (error) {
+        console.error('Ada masalah saat manggil petugas gudang untuk booking:', error);
+        pesanSukses.textContent = 'Terjadi kesalahan jaringan atau server, Baginda!';
+        pesanSukses.classList.remove('text-green-600');
+        pesanSukses.classList.add('text-red-600');
+      }
     });
 
     document.querySelectorAll('a[href]').forEach(function(link) {

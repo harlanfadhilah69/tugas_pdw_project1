@@ -168,7 +168,7 @@ $result_bookings = $koneksi->query($sql_bookings);
                         <th class="py-3 px-4 uppercase font-semibold text-sm text-left">No</th>
                         <th class="py-3 px-4 uppercase font-semibold text-sm text-left">Username</th>
                         <th class="py-3 px-4 uppercase font-semibold text-sm text-left">Nama Lengkap</th>
-                        <th class="py-3 px-4 uppercase font-semibold text-sm text-left">Tanggal</th>
+                        <th class="py-3 px-4 uppercase font-semibold text-sm text-left">Tanggal Pendakian</th>
                         <th class="py-3 px-4 uppercase font-semibold text-sm text-left">Jalur</th>
                         <th class="py-3 px-4 uppercase font-semibold text-sm text-center">Aksi</th>
                     </tr>

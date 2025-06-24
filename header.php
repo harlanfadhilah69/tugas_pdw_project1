@@ -43,9 +43,9 @@
             </div>
             
             <nav class="flex items-center space-x-4">
-                <a href="index.php" class="bg-green-600 hover:bg-green-700 text-white font-semibold px-4 py-2 rounded-md transition-colors">Beranda</a>
-                <a href="tentang.php" class="bg-green-600 hover:bg-green-700 text-white font-semibold px-4 py-2 rounded-md transition-colors">Tentang</a>
-                <a href="contact.php" class="bg-green-600 hover:bg-green-700 text-white font-semibold px-4 py-2 rounded-md transition-colors">Kontak</a>
+                <a href="index.php" class="bg-green-700 hover:bg-green-600 text-white font-semibold px-4 py-2 rounded-md transition-colors">Beranda</a>
+                <a href="tentang.php" class="bg-green-700 hover:bg-green-600 text-white font-semibold px-4 py-2 rounded-md transition-colors">Tentang</a>
+                <a href="contact.php" class="bg-green-700 hover:bg-green-600 text-white font-semibold px-4 py-2 rounded-md transition-colors">Kontak</a>
                 
                 <?php if (isset($_SESSION['user_id'])): ?>
                     <a href="booking.php" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-4 py-2 rounded-md transition-colors">Booking</a>

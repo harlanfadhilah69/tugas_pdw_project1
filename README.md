@@ -4,3 +4,4 @@
 [Harlan Fadhilah_009_ResumeMateriUCP.pdf](https://github.com/user-attachments/files/21027905/Harlan.Fadhilah_009_ResumeMateriUCP.pdf) 
 [AdekCahya_004_ResumePDW.pdf](https://github.com/user-attachments/files/21027917/AdekCahya_004_ResumePDW.pdf)
 [FirzyWijatmiko_040_ResumeMateriUCP.pdf](https://github.com/user-attachments/files/21027939/FirzyWijatmiko_040_ResumeMateriUCP.pdf)
+[GagatPadi_030_ResumePDW.pdf](https://github.com/user-attachments/files/21028074/GagatPadi_030_ResumePDW.pdf)
